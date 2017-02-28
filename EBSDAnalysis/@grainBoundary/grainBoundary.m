@@ -65,7 +65,7 @@ classdef grainBoundary < phaseList & dynProp
       fId = cumsum(d>0) + (d==0)*size(gB.F,1);
             
       gB.ebsdId = zeros(size(gB.F,1),2);
-      gB.ebsdId(fId) = eId;      
+      gB.ebsdId(fId) = eId;
             
       % compute grainId
       gB.grainId = zeros(size(gB.F,1),2);
@@ -94,6 +94,10 @@ classdef grainBoundary < phaseList & dynProp
       
       % compute triple points
       gB.triplePoints = gB.calcTriplePoints(grainsPhaseId);      
+      
+      % set ebsdId to the id of the EBSD data and NOT the index
+      isIndexed = gB.ebsdId>0;
+      gB.ebsdId(isIndexed) = ebsd.id(gB.ebsdId(isIndexed));
       
     end
 
