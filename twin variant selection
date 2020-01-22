@@ -1,0 +1,41 @@
+Hello everyone, I am working on twin variant of Mg alloys. I wonder if there is some code to corelate the pole figure and schmid factor.
+First I define an orientation. I calculate the 6 extension twin variants by applying an rotation about 86°<1,1,-2,0> axis, and plot them in (0,0,0,1) pole figure. I can also calculate the schmid factor for each twin variants. The problem is the link between highest potential twin variant with the max value and the corresponding position in pole figure.
+One approach is to define the twin variants seperatly (not with '.symmetrise'), and calculate the twin variant orientation and schmid factor one by one. But it is too much work. If i can label the rotation axis, like either[1,1,-2,0],[1,-2,1,0] or [-1,-1,2,0], it will also indicate the twin variant orientation. Or is there some easy way to do it?
+The scrpt is attached. Many thanks!
+
+
+%% define crystal symmetry
+CS=crystalSymmetry('6/mmm', [3.209 3.209 5.21], 'X||a', 'Y||b*', 'Z||c*', 'mineral', 'Magnesium', 'color', 'light blue')
+
+
+%% define an orientation
+ori=orientation('Euler',57*degree,54*degree,182*degree,CS)
+
+
+%% define the rotation axis of twinning
+h=Miller(1,1,-2,0,'uvtw',CS)
+H=h.symmetrise
+
+%% obtain the rotation axis in crystal reference
+HLocal=ori*H
+
+%% define the rotation of extension twinning
+rot=rotation('axis',HLocal,'angle',86*degree)
+
+%% obtain the extension twin orientation,and plot them in basal pole figure
+ori_new=rot*ori
+plotPDF(ori_new,Miller(0,0,0,1,CS),ori_new.CS)
+
+%% define the twinning system
+sT=slipSystem.twinT1(CS)
+sTAll=sT.symmetrise('antipodal')
+
+%% obtain the twin system in crystal reference
+sTLocal=ori*sTAll
+
+%% define the loading
+loading=vector3d(1,0,0)
+
+%% calculate the schmid factor
+SF=sTLocal.SchmidFactor(loading)
+ 
